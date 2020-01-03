@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:insta_clone/services/auth_service.dart';
 
 class SignupScreen extends StatefulWidget {
 
@@ -20,7 +21,8 @@ class _SignupScreenState extends State<SignupScreen> {
       print(_email);
       print(_password);
 
-      //login
+      //signup
+      AuthService.signUpUser(context, _name, _email, _password);
 
     }
   }
