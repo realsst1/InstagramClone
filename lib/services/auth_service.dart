@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:insta_clone/screens/feed_screen.dart';
+import 'package:insta_clone/screens/home_screen.dart';
 import 'package:insta_clone/screens/login_screen.dart';
 
 class AuthService{
@@ -36,7 +37,7 @@ class AuthService{
       AuthResult authResult=await _auth.signInWithEmailAndPassword(email: email, password: password);
       FirebaseUser user=authResult.user;
       if(user!=null){
-        Navigator.pushReplacementNamed(context, FeedScreen.id);
+        Navigator.pushReplacementNamed(context, HomeScreen.id);
       }
     } catch (e) {
       // TODO

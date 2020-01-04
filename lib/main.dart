@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_clone/screens/feed_screen.dart';
+import 'package:insta_clone/screens/home_screen.dart';
 import 'package:insta_clone/screens/login_screen.dart';
 import 'package:insta_clone/screens/sign_up.dart';
 
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
       stream: FirebaseAuth.instance.onAuthStateChanged,
       builder: (BuildContext context,snapshot){
         if(snapshot.hasData){
-          return FeedScreen();
+          return HomeScreen();
         }
         else{
           return LoginScreen();
@@ -37,7 +38,8 @@ class MyApp extends StatelessWidget {
       routes: {
         LoginScreen.id:(context)=>LoginScreen(),
         SignupScreen.id:(context)=>SignupScreen(),
-        FeedScreen.id:(context)=>FeedScreen()
+        FeedScreen.id:(context)=>FeedScreen(),
+        HomeScreen.id:(context)=>HomeScreen()
       },
     );
   }
