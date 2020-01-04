@@ -18,20 +18,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
    String _name='';
    String _bio='';
 
-   _submit(){
-     if(_formKey.currentState.validate()){
-       _formKey.currentState.save();
-
-       //update user in db
-       String _profileImageUrl='';
-       User user=User(id: widget.user.id,name: _name,bio: _bio,profileImageUrl: _profileImageUrl);
-
-       //DB Update
 
 
-       Navigator.pop(context);
-     }
-   }
+  _submitForm(){
+    if(_formKey.currentState.validate()){
+      _formKey.currentState.save();
+
+      String _profileImageUrl='';
+      User user=User(
+          id: widget.user.id,
+          name: _name,
+          bio: _bio,
+          profileImageUrl: _profileImageUrl
+      );
+
+      //DB Update
+
+
+      Navigator.pop(context);
+
+
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +88,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       icon: Icon(Icons.person,size: 30.0,),
                       labelText: 'Name'
                     ),
-                    validator: (input)=>input.trim().length<1?'Please Enter Name':null,
+                    validator: (input)=>input.isEmpty ? 'Please Enter Name':null,
                     onSaved: (input)=>_name=input,
                   ),
                   TextFormField(
@@ -92,7 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         icon: Icon(Icons.book,size: 30.0,),
                         labelText: 'Bio'
                     ),
-                    validator: (input)=>input.trim().length>150?'Please Enter Bio less than 150 chars':null,
+                    validator: (input)=>input.trim().length>150 ? 'Please Enter Bio less than 150 chars':null,
                     onSaved: (input)=>_bio=input,
                   ),
                   Container(
@@ -100,7 +108,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     height: 40.0,
                     width: 250.0,
                     child: FlatButton(
-                      onPressed: ()=>_submit,
+                      onPressed: _submitForm,
                       color: Colors.blue,
                       textColor: Colors.white,
                       child: Text(
