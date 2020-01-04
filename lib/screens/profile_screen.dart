@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:insta_clone/models/user_model.dart';
+import 'package:insta_clone/screens/edit_profile_screen.dart';
 import 'package:insta_clone/utilities/constants.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -19,6 +21,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: FutureBuilder(
         future: usersRef.document(widget.userID).get(),
         builder: (BuildContext context,AsyncSnapshot snapshot) {
+          if(!snapshot.hasData){
+            return Center(child: CircularProgressIndicator());
+          }
+          User user=User.fromDoc(snapshot.data);
+          print(user.name);
           return ListView(
             children: <Widget>[
               Padding(
@@ -94,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Container(
                             width: 200.0,
                             child: FlatButton(
-                              onPressed: () => print("pressed"),
+                              onPressed: () =>Navigator.push(context, MaterialPageRoute(builder: (_)=>EditProfileScreen(user:user))),
                               color: Colors.blue,
                               textColor: Colors.white,
                               child: Text(
@@ -118,7 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "Username",
+                      user.name,
                       style: TextStyle(
                           fontSize: 18.0,
                           fontWeight: FontWeight.bold
@@ -128,7 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Container(
                       height: 80.0,
                       child: Text(
-                        "bio",
+                        user.bio,
                         style: TextStyle(
                             fontSize: 15.0
                         ),
