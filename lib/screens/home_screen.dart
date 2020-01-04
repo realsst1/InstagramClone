@@ -9,6 +9,9 @@ import 'package:insta_clone/screens/search_screen.dart';
 class HomeScreen extends StatefulWidget {
 
    static final String id='home_screen';
+   final String userID;
+
+   HomeScreen({this.userID});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -48,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SearchScreen(),
           CreatePost(),
           ActivityScreen(),
-          ProfileScreen()
+          ProfileScreen(userID: widget.userID,)
         ],
         onPageChanged: (int index){
           setState(() {
