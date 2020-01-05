@@ -1,17 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:insta_clone/models/user_data.dart';
 import 'package:insta_clone/screens/activity_screen.dart';
 import 'package:insta_clone/screens/create_post_screen.dart';
 import 'package:insta_clone/screens/feed_screen.dart';
 import 'package:insta_clone/screens/profile_screen.dart';
 import 'package:insta_clone/screens/search_screen.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
 
    static final String id='home_screen';
-   final String userID;
 
-   HomeScreen({this.userID});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SearchScreen(),
           CreatePost(),
           ActivityScreen(),
-          ProfileScreen(userID: widget.userID,)
+          ProfileScreen(userID: Provider.of<UserData>(context).currentUserId,)
         ],
         onPageChanged: (int index){
           setState(() {

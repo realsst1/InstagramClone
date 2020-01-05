@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print(_password);
 
       //login
-      AuthService.login(context, _email, _password);  //context originaly not there
+      AuthService.login( _email, _password);  //context originaly not there
 
     }
   }

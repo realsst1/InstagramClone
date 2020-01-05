@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:insta_clone/models/user_model.dart';
 import 'package:insta_clone/screens/edit_profile_screen.dart';
 import 'package:insta_clone/utilities/constants.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
 
@@ -17,6 +18,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
+    print(widget.userID);
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -38,7 +40,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return Center(child: CircularProgressIndicator());
           }
           User user=User.fromDoc(snapshot.data);
-          print(user.name);
           return ListView(
             children: <Widget>[
               Padding(

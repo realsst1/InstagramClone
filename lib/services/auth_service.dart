@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:insta_clone/models/user_data.dart';
 import 'package:insta_clone/screens/feed_screen.dart';
 import 'package:insta_clone/screens/home_screen.dart';
 import 'package:insta_clone/screens/login_screen.dart';
+import 'package:provider/provider.dart';
 
 class AuthService{
   static final _auth=FirebaseAuth.instance;
@@ -19,7 +21,10 @@ class AuthService{
           'email':email,
           'profileImageUrl':''
         });
-        Navigator.pushReplacementNamed(context, FeedScreen.id);
+
+        Provider.of<UserData>(context).currentUserId=signedInUser.uid;
+        print("Signed in:"+signedInUser.uid);
+        Navigator.pushReplacementNamed(context,FeedScreen.id);
       }
     }
     catch(e){
@@ -27,18 +32,13 @@ class AuthService{
     }
   }
 
-  static void logout(BuildContext context){
+  static void logout(){
     _auth.signOut();
-    Navigator.pushReplacementNamed(context, LoginScreen.id);
   }
 
-  static void login(BuildContext context,String email,String password)async{
+  static void login(String email,String password)async{
     try {
-      AuthResult authResult=await _auth.signInWithEmailAndPassword(email: email, password: password);
-      FirebaseUser user=authResult.user;
-      if(user!=null){
-        Navigator.pushReplacementNamed(context, HomeScreen.id);
-      }
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
     } catch (e) {
       // TODO
       print(e);

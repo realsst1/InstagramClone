@@ -28,7 +28,7 @@ class _FeedScreenState extends State<FeedScreen> {
       backgroundColor: Colors.blue,
       body: Center(
         child: RaisedButton(
-          onPressed: ()=>AuthService.logout(context),
+          onPressed: ()=>AuthService.logout(),
         ),
       ),
     );
