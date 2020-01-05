@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insta_clone/models/user_model.dart';
+import 'package:insta_clone/services/database_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
 
@@ -19,6 +20,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
    String _bio='';
 
 
+  @override
+  void initState() {
+    super.initState();
+    _name=widget.user.name;
+    _bio=widget.user.bio;
+  }
 
   _submitForm(){
     if(_formKey.currentState.validate()){
@@ -33,7 +40,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
 
       //DB Update
-
+      DatabaseService.updateUser(user);
 
       Navigator.pop(context);
 

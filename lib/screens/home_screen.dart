@@ -90,13 +90,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.notifications,
+                Icons.favorite,
                 size: 32.0,
               )
           ),
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.account_circle,
+                Icons.person,
                 size: 32.0,
               )
           )
