@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      /*appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.white,
         title: Text(
@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
             fontSize: 35.0
           ),
         ),
-      ),
+      ),*/
       body: PageView(
         controller: _pageController,
         children: <Widget>[
