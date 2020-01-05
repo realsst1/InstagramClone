@@ -1,3 +1,4 @@
+
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -23,6 +24,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey=GlobalKey<FormState>();
    String _name='';
    String _bio='';
+   bool isLoading=false;
 
    File _profileImage;
 
@@ -62,6 +64,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   _submitForm() async{
     if(_formKey.currentState.validate()){
       _formKey.currentState.save();
+
+      setState(() {
+        isLoading=true;
+      });
 
       String _profileImageUrl='';
 
@@ -103,73 +109,76 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         backgroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          child: Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  CircleAvatar(
-                    radius: 60.0,
-                    backgroundColor: Colors.grey,
-                    backgroundImage:_displayProfileImage()
-                  ),
-                  FlatButton(
-                    onPressed: _handleImageFromGallery,
-                    child: Text(
-                      "Change Profile Image",
-                      style: TextStyle(
-                        color: Theme.of(context).accentColor
-                      ),
+      body: GestureDetector(
+        onTap: ()=>FocusScope.of(context).unfocus(),
+        child: ListView(
+          children: <Widget>[
+            isLoading?LinearProgressIndicator(backgroundColor: Colors.blue[200],valueColor:AlwaysStoppedAnimation(Colors.blue) ,):SizedBox.shrink(),
+             Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    CircleAvatar(
+                        radius: 60.0,
+                        backgroundColor: Colors.grey,
+                        backgroundImage:_displayProfileImage()
                     ),
-                  ),
-                  TextFormField(
-                    initialValue: _name,
-                    style: TextStyle(
-                      fontSize: 18.0,
-                    ),
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.person,size: 30.0,),
-                      labelText: 'Name'
-                    ),
-                    validator: (input)=>input.isEmpty ? 'Please Enter Name':null,
-                    onSaved: (input)=>_name=input,
-                  ),
-                  TextFormField(
-                    initialValue: _bio,
-                    style: TextStyle(
-                      fontSize: 18.0,
-                    ),
-                    decoration: InputDecoration(
-                        icon: Icon(Icons.book,size: 30.0,),
-                        labelText: 'Bio'
-                    ),
-                    validator: (input)=>input.trim().length>150 ? 'Please Enter Bio less than 150 chars':null,
-                    onSaved: (input)=>_bio=input,
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(40.0),
-                    height: 40.0,
-                    width: 250.0,
-                    child: FlatButton(
-                      onPressed: _submitForm,
-                      color: Colors.blue,
-                      textColor: Colors.white,
+                    FlatButton(
+                      onPressed: _handleImageFromGallery,
                       child: Text(
-                        "Save Changes",
+                        "Change Profile Image",
                         style: TextStyle(
-                          fontSize: 16.0
+                            color: Theme.of(context).accentColor
                         ),
                       ),
                     ),
-                  )
-                ],
+                    TextFormField(
+                      initialValue: _name,
+                      style: TextStyle(
+                        fontSize: 18.0,
+                      ),
+                      decoration: InputDecoration(
+                          icon: Icon(Icons.person,size: 30.0,),
+                          labelText: 'Name'
+                      ),
+                      validator: (input)=>input.isEmpty ? 'Please Enter Name':null,
+                      onSaved: (input)=>_name=input,
+                    ),
+                    TextFormField(
+                      initialValue: _bio,
+                      style: TextStyle(
+                        fontSize: 18.0,
+                      ),
+                      decoration: InputDecoration(
+                          icon: Icon(Icons.book,size: 30.0,),
+                          labelText: 'Bio'
+                      ),
+                      validator: (input)=>input.trim().length>150 ? 'Please Enter Bio less than 150 chars':null,
+                      onSaved: (input)=>_bio=input,
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(40.0),
+                      height: 40.0,
+                      width: 250.0,
+                      child: FlatButton(
+                        onPressed: _submitForm,
+                        color: Colors.blue,
+                        textColor: Colors.white,
+                        child: Text(
+                          "Save Changes",
+                          style: TextStyle(
+                              fontSize: 16.0
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
+          ]
         ),
       ),
     );
