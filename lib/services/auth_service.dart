@@ -24,7 +24,8 @@ class AuthService{
 
         Provider.of<UserData>(context).currentUserId=signedInUser.uid;
         print("Signed in:"+signedInUser.uid);
-        Navigator.pushReplacementNamed(context,FeedScreen.id);
+        //Navigator.pushReplacementNamed(context,FeedScreen.id);
+        Navigator.pop(context);
       }
     }
     catch(e){

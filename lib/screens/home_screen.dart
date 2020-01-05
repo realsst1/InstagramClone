@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final String currentUserId = Provider.of<UserData>(context).currentUserId;
     return Scaffold(
       /*appBar: AppBar(
         centerTitle: true,
@@ -51,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SearchScreen(),
           CreatePost(),
           ActivityScreen(),
-          ProfileScreen(userID: Provider.of<UserData>(context).currentUserId,)
+          ProfileScreen(userID: currentUserId,)
         ],
         onPageChanged: (int index){
           setState(() {
