@@ -1,8 +1,15 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:insta_clone/models/post_model.dart';
+import 'package:insta_clone/models/user_data.dart';
+import 'package:insta_clone/services/database_service.dart';
+import 'package:insta_clone/services/storage_service.dart';
+import 'package:provider/provider.dart';
 
 class CreatePost extends StatefulWidget {
   @override
@@ -79,8 +86,43 @@ class _CreatePostState extends State<CreatePost> {
     Navigator.pop(context);
     File imageFile=await ImagePicker.pickImage(source: source);
     if(imageFile!=null){
+      imageFile=await _cropImage(imageFile);
       setState(() {
         _image=imageFile;
+      });
+    }
+  }
+
+  _cropImage(File imageFile) async{
+    File croppedImage=await ImageCropper.cropImage(sourcePath: imageFile.path,aspectRatio: CropAspectRatio(ratioX: 1.0,ratioY: 1.0));
+    return croppedImage;
+  }
+
+  _submit() async{
+    if(!isLoading && _image!=null && _caption.isNotEmpty){
+      setState(() {
+        isLoading=true;
+      });
+
+      //create post
+      String imageUrl=await StorageService.uploadPost(_image);
+      Post post=Post(
+        imageUrl: imageUrl,
+        caption: _caption,
+        likes: {},
+        authorId: Provider.of<UserData>(context,listen: false).currentUserId,
+        timestamp: Timestamp.fromDate(DateTime.now())
+      );
+
+      DatabaseService.createPost(post);
+
+      //reset
+      _captionController.clear();
+
+      setState(() {
+        _caption='';
+        _image=null;
+        isLoading=false;
       });
     }
   }
@@ -102,26 +144,57 @@ class _CreatePostState extends State<CreatePost> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: ()=>print("add"),
+            onPressed: _submit,
           )
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          GestureDetector(
-            onTap: _showSelectImageDialog,
-            child: Container(
-              height: width,
-              width: width,
-              color: Colors.grey[300],
-              child:_image==null ? Icon(
-                Icons.add_a_photo,
-                color: Colors.white70,
-                size: 150.0,
-              ):Image(image: FileImage(_image),fit: BoxFit.cover,) ,
+      body: GestureDetector(
+        onTap: ()=>FocusScope.of(context).unfocus(),
+        child: SingleChildScrollView(
+          child: Container(
+            height: height,
+            child: Column(
+              children: <Widget>[
+                isLoading ? Padding(
+                  padding: EdgeInsets.only(bottom: 10.0),
+                  child: LinearProgressIndicator(
+                    backgroundColor: Colors.blue[200],
+                    valueColor: AlwaysStoppedAnimation(
+                      Colors.blue
+                    ),
+                  ),
+                ):SizedBox.shrink(),
+                GestureDetector(
+                  onTap: _showSelectImageDialog,
+                  child: Container(
+                    height: width,
+                    width: width,
+                    color: Colors.grey[300],
+                    child:_image==null ? Icon(
+                      Icons.add_a_photo,
+                      color: Colors.white70,
+                      size: 150.0,
+                    ):Image(image: FileImage(_image),fit: BoxFit.cover,) ,
+                  ),
+                ),
+                SizedBox(height: 20.0,),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal:30.0),
+                  child: TextField(
+                    controller: _captionController,
+                    style: TextStyle(
+                      fontSize: 18.0
+                    ),
+                    decoration: InputDecoration(
+                      labelText: "Caption"
+                    ),
+                    onChanged: (input)=>_caption=input,
+                  ),
+                )
+              ],
             ),
-          )
-        ],
+          ),
+        ),
       )
     );
   }

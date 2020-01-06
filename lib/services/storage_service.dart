@@ -33,4 +33,14 @@ class StorageService{
     );
     return compressedImageFile;
   }
+
+  static Future<String> uploadPost(File imageFile) async{
+    String photoID=Uuid().v4();
+    File image=await compressedImage(photoID, imageFile);
+
+    StorageUploadTask uploadTask=storageRef.child('images/posts/post_$photoID.jpg').putFile(image);
+    StorageTaskSnapshot storageTaskSnapshot=await uploadTask.onComplete;
+    String downloadUrl=await storageTaskSnapshot.ref.getDownloadURL();
+    return downloadUrl;
+  }
 }
