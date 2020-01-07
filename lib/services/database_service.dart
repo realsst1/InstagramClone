@@ -26,4 +26,46 @@ class DatabaseService{
       'timestamp':post.timestamp
     });
   }
+
+  static void followUser(String currentUserId,String userId){
+    //add user to current users following
+    followingRef.document(currentUserId).collection("usersFollowing").document(userId).setData({});
+
+
+    //add current user to users' followers
+    followersRef.document(userId).collection("usersFollowers").document(currentUserId).setData({});
+  }
+
+  static void unFollowUser(String currentUserId,String userId){
+    //remove user from current users following
+    followingRef.document(currentUserId).collection("usersFollowing").document(userId).get().then((doc){
+      if(doc.exists){
+        doc.reference.delete();
+      }
+    });
+
+
+    //remove current user from users' followers
+    followersRef.document(userId).collection("usersFollowers").document(currentUserId).get().then((doc){
+      if(doc.exists){
+        doc.reference.delete();
+      }
+    });
+  }
+
+  static Future<bool> isFollowingUser({String currentUserId,String userId})async{
+    DocumentSnapshot followingDoc=await followersRef.document(userId).collection("usersFollowers").document(currentUserId).get();
+    return followingDoc.exists;
+  }
+
+  static Future<int> numFollowers(String userId) async{
+    QuerySnapshot followerSnapshot=await followersRef.document(userId).collection("usersFollowers").getDocuments();
+    return followerSnapshot.documents.length;
+  }
+
+  static Future<int> numFollowing(String userId) async{
+    QuerySnapshot followingSnapshot=await followingRef.document(userId).collection("usersFollowing").getDocuments();
+    return followingSnapshot.documents.length;
+  }
+
 }
