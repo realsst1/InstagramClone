@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:insta_clone/models/post_model.dart';
 import 'package:insta_clone/models/user_data.dart';
 import 'package:insta_clone/models/user_model.dart';
 import 'package:insta_clone/screens/edit_profile_screen.dart';
 import 'package:insta_clone/services/database_service.dart';
 import 'package:insta_clone/utilities/constants.dart';
+import 'package:insta_clone/widgets/post_view.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -20,9 +22,14 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
 
-  bool isFollowing=false;
-  int followersCount=0;
-  int followingCount=0;
+  bool _isFollowing=false;
+  int _followersCount=0;
+  int _followingCount=0;
+  List<Post> _posts=[];
+  int _displayPosts=0; //0-grid 1-col
+
+  User _profileUser;
+
 
 
   @override
@@ -31,6 +38,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _setupIsFollowing();
     _setupFollowers();
     _setupFollowing();
+    _setupPosts();
+    _setupProfileUser();
+  }
+
+  _setupProfileUser()async{
+    User profileUser=await DatabaseService.getUserWithId(widget.userID);
+    setState(() {
+      _profileUser=profileUser;
+    });
+    
+  }
+
+  _setupPosts() async{
+    List<Post> posts=await DatabaseService.getUserPosts(widget.userID);
+    setState(() {
+      _posts=posts;
+    });
   }
 
   _setupIsFollowing()async{
@@ -39,27 +63,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
       userId:widget.userID
     );
     setState(() {
-      isFollowing=isFollowingUser;
+      _isFollowing=isFollowingUser;
     });
   }
 
   _setupFollowers() async{
-    int userFollowersCount=await DatabaseService.numFollowers(widget.userID);
+    int user_followersCount=await DatabaseService.numFollowers(widget.userID);
     setState(() {
-      followersCount=userFollowersCount;
+      _followersCount=user_followersCount;
     });
 
   }
 
   _setupFollowing()async{
-    int userFollowingCount=await DatabaseService.numFollowing(widget.userID);
+    int user_followingCount=await DatabaseService.numFollowing(widget.userID);
     setState(() {
-      followingCount=userFollowingCount;
+      _followingCount=user_followingCount;
     });
   }
 
   _followorUnfollow(){
-    if(isFollowing){
+    if(_isFollowing){
       _unFollowUser();
     }
     else{
@@ -70,16 +94,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   _unFollowUser(){
     DatabaseService.unFollowUser(widget.currentUserId,widget.userID);
     setState(() {
-      isFollowing=false;
-      followersCount--;
+      _isFollowing=false;
+      _followersCount--;
     });
   }
 
   _followUser(){
     DatabaseService.followUser(widget.currentUserId, widget.userID);
     setState(() {
-      isFollowing=true;
-      followersCount++;
+      _isFollowing=true;
+      _followersCount++;
     });
   }
 
@@ -109,16 +133,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
       width: 200.0,
       child: FlatButton(
         onPressed: _followorUnfollow,
-        color: isFollowing?Colors.grey[200]:Colors.blue,
-        textColor: isFollowing?Colors.black:Colors.white,
+        color: _isFollowing?Colors.grey[200]:Colors.blue,
+        textColor: _isFollowing?Colors.black:Colors.white,
         child: Text(
-          isFollowing?"Unfollow":"Follow",
+          _isFollowing?"Unfollow":"Follow",
           style: TextStyle(
               fontSize: 16.0
           ),
         ),
       ),
     );
+  }
+
+  _buildTilePost(Post post){
+    return GridTile(
+      child: Image(
+        image: CachedNetworkImageProvider(post.imageUrl),
+        fit: BoxFit.cover,
+      ),
+    );
+  }
+
+  _buildDisplayPost() {
+    if(_displayPosts==0){
+      List<GridTile> tiles=[];
+      _posts.forEach((post){
+        tiles.add(_buildTilePost(post));
+      });
+      return GridView.count(
+        crossAxisCount: 3,
+        childAspectRatio: 1.0,
+        mainAxisSpacing: 2.0,
+        crossAxisSpacing: 2.0,
+        shrinkWrap: true,
+        children: tiles,
+        physics: NeverScrollableScrollPhysics(),
+      );
+    }
+    else{
+      List<PostView> postViews=[];
+      _posts.forEach((post) {
+        postViews.add(PostView(currentUserId: widget.currentUserId,post: post,author:_profileUser,));
+      });
+      return Column(
+        children:postViews
+      );
+    }
   }
 
   @override
@@ -169,7 +229,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Column(
                                 children: <Widget>[
                                   Text(
-                                    "12",
+                                    _posts.length.toString(),
                                     style: TextStyle(
                                         fontSize: 18.0,
                                         fontWeight: FontWeight.w600
@@ -186,7 +246,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Column(
                                 children: <Widget>[
                                   Text(
-                                    followersCount.toString(),
+                                    _followersCount.toString(),
                                     style: TextStyle(
                                         fontSize: 18.0,
                                         fontWeight: FontWeight.w600
@@ -203,7 +263,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Column(
                                 children: <Widget>[
                                   Text(
-                                    followingCount.toString(),
+                                    _followingCount.toString(),
                                     style: TextStyle(
                                         fontSize: 18.0,
                                         fontWeight: FontWeight.w600
@@ -252,7 +312,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Divider()
                   ],
                 ),
-              )
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.grid_on),
+                    iconSize: 30.0,
+                    color: _displayPosts==0?Theme.of(context).primaryColor:Colors.grey[300],
+                    onPressed: ()=> setState((){
+                      _displayPosts=0;
+                    }),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.list),
+                    iconSize: 30.0,
+                    color: _displayPosts==1?Theme.of(context).primaryColor:Colors.grey[300],
+                    onPressed: ()=> setState((){
+                      _displayPosts=1;
+                    }),
+                  )
+                ],
+              ),
+              _buildDisplayPost()
             ],
           );
         }

@@ -81,4 +81,10 @@ class DatabaseService{
     }
     return User();
   }
+
+  static Future<List<Post>> getUserPosts(String userId) async{
+    QuerySnapshot usersPostSnapshot=await postsRef.document(userId).collection('userPosts').orderBy('timestamp',descending: true).getDocuments();
+    List<Post> posts=usersPostSnapshot.documents.map((doc)=>Post.fromDoc(doc)).toList();
+    return posts;
+  }
 }
