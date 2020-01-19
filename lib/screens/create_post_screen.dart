@@ -109,7 +109,7 @@ class _CreatePostState extends State<CreatePost> {
       Post post=Post(
         imageUrl: imageUrl,
         caption: _caption,
-        likes: {},
+        likes: 0,
         authorId: Provider.of<UserData>(context,listen: false).currentUserId,
         timestamp: Timestamp.fromDate(DateTime.now())
       );

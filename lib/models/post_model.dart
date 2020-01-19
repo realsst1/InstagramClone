@@ -4,7 +4,7 @@ class Post {
   final String id;
   final String imageUrl;
   final String caption;
-  final dynamic likes;
+  final int likes;
   final String authorId;
   final Timestamp timestamp;
 

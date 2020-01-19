@@ -87,4 +87,55 @@ class DatabaseService{
     List<Post> posts=usersPostSnapshot.documents.map((doc)=>Post.fromDoc(doc)).toList();
     return posts;
   }
+
+
+  static void commentOnPost({String currentUserId,Post post,String comment}){
+    commentsRef.document(post.id).collection("postComments").add({
+      'content':comment,
+      'authorId':currentUserId,
+      'timestamp':Timestamp.fromDate(DateTime.now())
+    });
+  }
+
+
+  static void likePost({String currentUserId,Post post}){
+    DocumentReference postRef=postsRef
+        .document(post.authorId)
+        .collection('userPosts')
+        .document(post.id);
+    postRef.get().then((doc){
+      int likeCount=doc.data['likes'];
+      postRef.updateData({'likes':likeCount+1});
+
+      likesRef.document(post.id).collection('postLikes').document(currentUserId).setData({});
+
+    });
+  }
+
+  static void unlikePost({String currentUserId,Post post}){
+    DocumentReference postRef=postsRef
+        .document(post.authorId)
+        .collection('userPosts')
+        .document(post.id);
+    postRef.get().then((doc){
+      int likeCount=doc.data['likes'];
+      postRef.updateData({'likes':likeCount-1});
+
+      likesRef.document(post.id).collection('postLikes').document(currentUserId).get().then((doc){
+        if(doc.exists){
+          doc.reference.delete();
+        }
+      });
+
+    });
+  }
+
+  static Future<bool> didLikePost({String currentUserId,Post post}) async{
+    DocumentSnapshot userDoc=await likesRef
+        .document(post.id)
+        .collection('postLikes')
+        .document(currentUserId)
+        .get();
+    return userDoc.exists;
+  }
 }

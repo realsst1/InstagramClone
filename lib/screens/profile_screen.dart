@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:insta_clone/models/post_model.dart';
 import 'package:insta_clone/models/user_data.dart';
 import 'package:insta_clone/models/user_model.dart';
+import 'package:insta_clone/screens/comments_screen.dart';
 import 'package:insta_clone/screens/edit_profile_screen.dart';
+import 'package:insta_clone/services/auth_service.dart';
 import 'package:insta_clone/services/database_service.dart';
 import 'package:insta_clone/utilities/constants.dart';
 import 'package:insta_clone/widgets/post_view.dart';
@@ -147,9 +149,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   _buildTilePost(Post post){
     return GridTile(
-      child: Image(
-        image: CachedNetworkImageProvider(post.imageUrl),
-        fit: BoxFit.cover,
+      child: GestureDetector(
+        onTap: ()=>Navigator.push(context, MaterialPageRoute(
+          builder: (_)=>CommentsScreen(
+            post: post,
+            likeCount: post.likes,
+          )
+        )),
+        child: Image(
+          image: CachedNetworkImageProvider(post.imageUrl),
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }
@@ -195,6 +205,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 fontSize: 35.0
             ),
           ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.exit_to_app),
+              onPressed: AuthService.logout,
+            )
+          ],
         ),
       backgroundColor: Colors.white,
       body: FutureBuilder(
