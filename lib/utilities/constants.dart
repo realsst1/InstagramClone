@@ -10,3 +10,4 @@ final followingRef=_firestore.collection("following");
 final feedRef=_firestore.collection("feeds");
 final commentsRef=_firestore.collection("comments");
 final likesRef=_firestore.collection("likes");
+final activitiesRef=_firestore.collection("activities");

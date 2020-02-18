@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
           FeedScreen(currentUserId: currentUserId,),
           SearchScreen(),
           CreatePost(),
-          ActivityScreen(),
+          ActivityScreen(currentUserId:currentUserId),
           ProfileScreen(currentUserId: currentUserId,userID: currentUserId,)
         ],
         onPageChanged: (int index){
